@@ -6,7 +6,7 @@ on:  #Name of the GitHub event that triggers the workflow
     - master   
 
 jobs:  #Workflow run is made up of one or more jobs
-  deploy_lambda:
+  deploy:
     runs-on: ubuntu-latest  #Through which Server OS we need to Work (type of machine to run the job on)
     steps:
     #Using versioned actions 
@@ -34,8 +34,8 @@ jobs:  #Workflow run is made up of one or more jobs
           ECR_REPOSITORY: nodejs-infra
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          DOCKER_BUILDKIT=1 docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          DOCKER_BUILDKIT=1 docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker buildx build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker buildx build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
       # - name: deploy
       #   run: |
       #     zip -j deploy.zip ./* #--> Zip the Code As we know lambda function accept the zip file.

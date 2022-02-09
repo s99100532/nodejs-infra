@@ -23,5 +23,5 @@ provider "aws" {
 
 
 resource "aws_ecr_repository" "registry" {
-  name = "node-infra"
+  name = "nodejs-infra"
 }

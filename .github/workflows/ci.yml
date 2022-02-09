@@ -31,11 +31,10 @@ jobs:  #Workflow run is made up of one or more jobs
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: nodejs-test
+          ECR_REPOSITORY: nodejs-infra
           IMAGE_TAG: ${{ github.sha }}
-          APP_PATH: examples/servers/express/api-with-express-and-handlebars
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $APP_PATH
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       # - name: deploy
       #   run: |

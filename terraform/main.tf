@@ -7,8 +7,12 @@ terraform {
   }
 
   required_version = ">= 0.14.9"
-}
 
+  backend "s3" {
+    bucket = "nodejs-terraform-state"
+    region = "ap-southeast-1"
+  }
+}
 provider "aws" {
   profile = "david"
   region  = "ap-southeast-1"

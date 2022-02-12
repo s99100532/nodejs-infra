@@ -81,7 +81,7 @@ docker exec -it $CONTAINER_ID ash
 ```
 
 if want to limit the ip to access, update `ssh_limit_ips` in https://github.com/s99100532/nodejs-infra/blob/master/terraform/main.tf#L39
-For example, if the only ip to access is `113.108.18.87`, then set `ssh_limit_ips` to `['113.108.18.87/32']`
+For example, if the only ip to access is `113.108.18.87`, then set `ssh_limit_ips` to `["113.108.18.87/32"]`
 
 
 ## Deploy the code change

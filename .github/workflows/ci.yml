@@ -46,7 +46,7 @@ jobs: #Workflow run is made up of one or more jobs
       - name: Build and push
         uses: docker/build-push-action@v2
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: 327689575644.dkr.ecr.ap-southeast-1.amazonaws.com
           ECR_REPOSITORY: nodejs-infra
           IMAGE_TAG: ${{ github.sha }}
         with:
@@ -57,7 +57,7 @@ jobs: #Workflow run is made up of one or more jobs
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: 327689575644.dkr.ecr.ap-southeast-1.amazonaws.com
           ECR_REPOSITORY: nodejs-infra
           IMAGE_TAG: ${{ github.sha }}
         with:

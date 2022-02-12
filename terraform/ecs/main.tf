@@ -22,6 +22,10 @@ module "ecs_cluster" {
 
 }
 
+data "aws_ecs_service" "dummy_service" {
+  service_name = var.cluster_name
+  cluster_arn  = module.ecs_cluster.cluster_arn
+}
 
 
 module "ecs_service" {
@@ -40,7 +44,7 @@ module "ecs_service" {
   service_port     = "3000"
   target_group_arn = "arn:aws:elasticloadbalancing:ap-southeast-1:327689575644:targetgroup/nodejs-infra/cbb39b52fa6e55f9"
 
-  service_desired_count                      = "1"
+  service_desired_count                      = data.aws_ecs_service.dummy_service.desired_count
   service_deployment_maximum_percent         = "200"
   service_deployment_minimum_healthy_percent = "50"
 
@@ -89,7 +93,7 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
-    target_value = 20
+    target_value = 18
 
     scale_in_cooldown  = 30
     scale_out_cooldown = 30

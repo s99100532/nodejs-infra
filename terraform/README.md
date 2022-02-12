@@ -72,7 +72,7 @@ k6 run -e MY_URL=$MY_URL script.js
 
 ## SSH to the container
 
-There is a [feature](https://aws.amazon.com/tw/blogs/containers/new-using-amazon-ecs-exec-access-your-containers-fargate-ec2/) that allow direct ssh access to the container but require extra setup. So we talk a simple approach this time.
+There is a (feature)[https://aws.amazon.com/tw/blogs/containers/new-using-amazon-ecs-exec-access-your-containers-fargate-ec2/] that allow direct ssh access to the container but require extra setup. So we talk a simple approach this time.
 
 1. ssh to the container machine (ec2) in which the task running.
 2. access the container use `ash`. 

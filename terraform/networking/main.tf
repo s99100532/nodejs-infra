@@ -8,11 +8,18 @@ resource "aws_default_vpc" "default" {
   }
 }
 
-resource "aws_default_subnet" "default" {
+resource "aws_default_subnet" "first" {
   availability_zone = "ap-southeast-1a"
 
   tags = {
     Name = "Default subnet for ap-southeast-1a"
+  }
+}
+resource "aws_default_subnet" "second" {
+  availability_zone = "ap-southeast-1b"
+
+  tags = {
+    Name = "Default subnet for ap-southeast-1b"
   }
 }
 

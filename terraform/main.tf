@@ -43,11 +43,11 @@ module "iam" {
 }
 
 
-# module "ecs" {
-#   source                 = "./ecs"
-#   cluster_name           = local.name
-#   ec2_subnet_id          = module.networking.default_subnet_id
-#   ec2_key_name           = "nodejs-infra"
-#   vpc_security_group_ids = [module.networking.default_security_group_id]
-#   vpc_id                 = module.networking.default_vpc_id
-# }
+module "ecs" {
+  source                 = "./ecs"
+  cluster_name           = local.name
+  ec2_subnet_id          = module.networking.default_subnet_ids[0]
+  subnet_ids             = module.networking.default_subnet_ids
+  ec2_key_name           = "nodejs-infra"
+  vpc_id                 = module.networking.default_vpc_id
+}

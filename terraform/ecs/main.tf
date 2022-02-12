@@ -45,10 +45,15 @@ module "ecs_service" {
   service_deployment_minimum_healthy_percent = "50"
 
 
-  service_task_container_definitions = file("${path.module}/task_definition.json")
+  service_task_container_definitions = data.aws_s3_bucket_object.task_definition.body
 
   ecs_cluster_id               = module.ecs_cluster.cluster_id
   ecs_cluster_service_role_arn = module.ecs_cluster.service_role_arn
+}
+
+data "aws_s3_bucket_object" "task_definition" {
+  bucket = "infra-assets"
+  key    = "task_definition.json"
 }
 
 module "alb" {
@@ -90,9 +95,9 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
 }
 
 
-resource "aws_lb_target_group" "ecs_elb_target_group" {
-  name     = var.cluster_name
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
-}
+# resource "aws_lb_target_group" "ecs_elb_target_group" {
+#   name     = var.cluster_name
+#   port     = 80
+#   protocol = "HTTP"
+#   vpc_id   = var.vpc_id
+# }

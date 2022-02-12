@@ -30,7 +30,7 @@ This is the documentation decribing the infrastucture.
 Terraform is the CI/CD for infrastructure in which there are still some steps for first time setup.
 
 1. create your own ssh key and then generate the public key and replace file `public.pub` under `assets/`
-2. create a bucket and replace the bucket name (here)[https://github.com/s99100532/nodejs-infra/blob/78b633ec069101e2003aee04bb51e26a75442269/terraform/main.tf#L17]
+2. create a bucket and replace the bucket name https://github.com/s99100532/nodejs-infra/blob/78b633ec069101e2003aee04bb51e26a75442269/terraform/main.tf#L17
 
 ### Provisioning
 
@@ -72,8 +72,13 @@ k6 run -e MY_URL=$MY_URL script.js
 
 ## SSH to the container
 
-1. ssh to the container machine (ec2)
-2. docker exec -it $CONTAINER_ID ash
+There is a [feature](https://aws.amazon.com/tw/blogs/containers/new-using-amazon-ecs-exec-access-your-containers-fargate-ec2/) that allow direct ssh access to the container but require extra setup. So we talk a simple approach this time.
 
-if want to limit the ip to access, update `ssh_limit_ips` in (here)[https://github.com/s99100532/nodejs-infra/blob/78b633ec069101e2003aee04bb51e26a75442269/terraform/main.tf#L39]
-For example, the only ip to access is `113.108.18.87`, then set `ssh_limit_ips` to `['113.108.18.87/32']`
+1. ssh to the container machine (ec2) in which the task running.
+2. access the container use `ash`. 
+```sh
+docker exec -it $CONTAINER_ID ash
+```
+
+if want to limit the ip to access, update `ssh_limit_ips` in https://github.com/s99100532/nodejs-infra/blob/78b633ec069101e2003aee04bb51e26a75442269/terraform/main.tf#L39
+For example, if the only ip to access is `113.108.18.87`, then set `ssh_limit_ips` to `['113.108.18.87/32']`

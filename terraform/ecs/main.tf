@@ -12,11 +12,13 @@ module "ecs_cluster" {
   cluster_name                         = var.app_name
   cluster_instance_ssh_public_key_path = "./assets/public.pub"
   cluster_instance_type                = "t2.micro"
-  allowed_cidrs                        = ["0.0.0.0/0"]
+  # allowed_cidrs                        = ["0.0.0.0/0"]
 
   cluster_minimum_size     = 1
   cluster_maximum_size     = 2
   cluster_desired_capacity = 1
+
+  security_groups = var.security_group_ids
 
   include_asg_capacity_provider = "no"
 
@@ -66,7 +68,7 @@ module "alb" {
 
   vpc_id          = var.vpc_id
   subnets         = var.subnet_ids
-  security_groups = [module.ecs_cluster.security_group_id]
+  security_groups = concat(var.security_group_ids, [module.ecs_cluster.security_group_id])
 }
 
 resource "aws_appautoscaling_target" "ecs_target" {

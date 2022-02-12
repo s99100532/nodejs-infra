@@ -37,16 +37,16 @@ resource "aws_default_security_group" "default" {
     self             = false
     to_port          = 22
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    cidr_blocks      = var.ssh_limit_ips
     }, {
-    from_port        = 443
+    from_port        = 0
     description      = ""
     ipv6_cidr_blocks = []
     prefix_list_ids  = []
     security_groups  = []
     self             = false
-    to_port          = 443
-    protocol         = "tcp"
+    to_port          = 0
+    protocol         = -1
     cidr_blocks      = ["0.0.0.0/0"]
   }]
 

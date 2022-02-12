@@ -23,19 +23,19 @@ This is the documentation decribing the infrastucture.
 - [x] Management access (SSH or RDP) to the servers are allowed only for restricted IPs
 - [x] Design and implement a process for deploying new application versions with no downtime
 
-## Provision the infrascture
+## Provision the infrastructure
 
-## Prerequisites
+### Prerequisites
 
 Terraform is the CI/CD for infrastructure in which there are still some steps for first time setup.
 
 1. create your own ssh key and then generate the public key and replace file `public.pub` under `assets/`
 
-## Provisioning
+### Provisioning
 
-3. Intall `terraform` and `aws-cli` according to [here](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+1. Intall `terraform` and `aws-cli` according to [here](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-4. (Optional if use default AWS profile) Create a named AWS profile for terraform to provision the infrastructure.
+2. (Optional if use default AWS profile) Create a named AWS profile for terraform to provision the infrastructure.
 
 ```sh
 # configure the AWS credential
@@ -44,7 +44,7 @@ aws configure --profile $YOUR_PROFILE_NAME
 export AWS_PROFILE=$YOUR_PROFILE_NAME
 ```
 
-3. RUN
+3. provision the infrastructure
 
 ```sh
 # initialize the dependency
@@ -64,7 +64,7 @@ terraform apply
 ```sh
 # assume you are in repository root.
 cd load_test
-k6 run script.js
+k6 run -e MY_URL=$MY_URL script.js
 ```
 
 3. the cluster will be scaled in 3 minutes.

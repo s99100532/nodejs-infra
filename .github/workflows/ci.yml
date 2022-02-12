@@ -1,4 +1,4 @@
-name: Deploy #Name of the Workflow
+name: Build and deploy #Name of the Workflow
 
 on: #Name of the GitHub event that triggers the workflow
   push: #On Push Event We need to take action
@@ -10,24 +10,41 @@ on: #Name of the GitHub event that triggers the workflow
 env:
   ECS_SERVICE: nodejs-infra
   ECS_CLUSTER: app-production-nodejs-infra
+  ECR_REGISTRY: 327689575644.dkr.ecr.ap-southeast-1.amazonaws.com
+  ECR_REPOSITORY: nodejs-infra
 
 jobs: #Workflow run is made up of one or more jobs
-  deploy:
+  build:
     runs-on: ubuntu-latest #Through which Server OS we need to Work (type of machine to run the job on)
     steps:
       #Using versioned actions
-      - uses: actions/checkout@v2 # --> Reference a specific version
-      - uses: actions/setup-node@v2 # --> To Setup the Server With Node Env
-        with:
-          node-version: "14" #--> Specify the Version of the Node
+      - uses: actions/checkout@v2
       # # enable if using `act`
       # - id: install-aws-cli
       #   run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-        id: buildx
         with:
           install: true
+      - name: Login to ECR
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.ECR_REGISTRY }}
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest, ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli
         with:
@@ -35,30 +52,17 @@ jobs: #Workflow run is made up of one or more jobs
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-1 #--> Define Region of the AWS-CLI
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition app-nodejs-infra-production --query taskDefinition > task-definition.json
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: nodejs-infra
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-          docker build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
           container-name: nodejs-infra
-          image: ${{ steps.build-image.outputs.image }}
+          image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
       - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}

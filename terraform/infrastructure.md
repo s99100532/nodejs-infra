@@ -29,7 +29,9 @@ This is the documentation decribing the infrastucture.
 
 Terraform is the CI/CD for infrastructure in which there are still some steps for first time setup.
 
-1. create your own ssh key and then generate the public key and replace file `public.pub`
+1. create your own ssh key and then generate the public key and replace file `public.pub` under `assets/`
+
+## Provisioning
 
 3. Intall `terraform` and `aws-cli` according to [here](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 

@@ -72,7 +72,7 @@ k6 run -e MY_URL=$MY_URL script.js
 
 ## SSH to the container
 
-There is a (feature)[https://aws.amazon.com/tw/blogs/containers/new-using-amazon-ecs-exec-access-your-containers-fargate-ec2/] that allow direct ssh access to the container but require extra setup. So we talk a simple approach this time.
+There is a [feature](https://aws.amazon.com/tw/blogs/containers/new-using-amazon-ecs-exec-access-your-containers-fargate-ec2/) that allow direct ssh access to the container but require extra setup. So we take a simple approach this time.
 
 1. ssh to the container machine (ec2) in which the task running.
 2. access the container use `ash`. 
@@ -82,3 +82,10 @@ docker exec -it $CONTAINER_ID ash
 
 if want to limit the ip to access, update `ssh_limit_ips` in https://github.com/s99100532/nodejs-infra/blob/78b633ec069101e2003aee04bb51e26a75442269/terraform/main.tf#L39
 For example, if the only ip to access is `113.108.18.87`, then set `ssh_limit_ips` to `['113.108.18.87/32']`
+
+
+## Deploy the code change
+- Submit a PR to `master` branch
+- Push to `master` branch
+
+> hints: add `[skip ci]` in commit message will skip the CI.

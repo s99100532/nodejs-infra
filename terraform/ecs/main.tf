@@ -72,7 +72,7 @@ module "alb" {
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = 2
   min_capacity       = 1
-  resource_id        = "service/${var.cluster_name}/${var.cluster_name}"
+  resource_id        = "service/${module.ecs_cluster.cluster_name}/${var.cluster_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
@@ -82,7 +82,7 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
   service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
 
-  name        = "application-scaling-policy-cpu"
+  name        = "nodejs-infra-scaling"
   policy_type = "TargetTrackingScaling"
 
   target_tracking_scaling_policy_configuration {
@@ -90,6 +90,9 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
     target_value = 20
+
+    scale_in_cooldown  = 30
+    scale_out_cooldown = 30
   }
   depends_on = [aws_appautoscaling_target.ecs_target]
 }

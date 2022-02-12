@@ -4,13 +4,13 @@ module "ecs_cluster" {
 
   region     = "ap-southeast-1"
   vpc_id     = var.vpc_id
-  subnet_ids = [var.ec2_subnet_id]
+  subnet_ids = var.ec2_subnet_ids
 
   component             = "app"
   deployment_identifier = "production"
 
-  cluster_name                         = var.cluster_name
-  cluster_instance_ssh_public_key_path = "./public.pub"
+  cluster_name                         = var.app_name
+  cluster_instance_ssh_public_key_path = "./assets/public.pub"
   cluster_instance_type                = "t2.micro"
   allowed_cidrs                        = ["0.0.0.0/0"]
 
@@ -23,7 +23,7 @@ module "ecs_cluster" {
 }
 
 data "aws_ecs_service" "dummy_service" {
-  service_name = var.cluster_name
+  service_name = var.app_name
   cluster_arn  = module.ecs_cluster.cluster_arn
 }
 
@@ -39,7 +39,7 @@ module "ecs_service" {
   component             = "app"
   deployment_identifier = "production"
 
-  service_name     = var.cluster_name
+  service_name     = var.app_name
   service_image    = "327689575644.dkr.ecr.ap-southeast-1.amazonaws.com/nodejs-infra:latest"
   service_port     = "3000"
   target_group_arn = "arn:aws:elasticloadbalancing:ap-southeast-1:327689575644:targetgroup/nodejs-infra/cbb39b52fa6e55f9"
@@ -49,22 +49,18 @@ module "ecs_service" {
   service_deployment_minimum_healthy_percent = "50"
 
 
-  service_task_container_definitions = data.aws_s3_bucket_object.task_definition.body
+  service_task_container_definitions = file("./assets/task_definition.json")
 
   ecs_cluster_id               = module.ecs_cluster.cluster_id
   ecs_cluster_service_role_arn = module.ecs_cluster.service_role_arn
 }
 
-data "aws_s3_bucket_object" "task_definition" {
-  bucket = "infra-assets"
-  key    = "task_definition.json"
-}
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 6.0"
 
-  name = var.cluster_name
+  name = var.app_name
 
   load_balancer_type = "application"
 
@@ -76,7 +72,7 @@ module "alb" {
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = 2
   min_capacity       = 1
-  resource_id        = "service/${module.ecs_cluster.cluster_name}/${var.cluster_name}"
+  resource_id        = "service/${module.ecs_cluster.cluster_name}/${var.app_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
@@ -103,7 +99,7 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
 
 
 # resource "aws_lb_target_group" "ecs_elb_target_group" {
-#   name     = var.cluster_name
+#   name     = var.app_name
 #   port     = 80
 #   protocol = "HTTP"
 #   vpc_id   = var.vpc_id

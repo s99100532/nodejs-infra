@@ -18,10 +18,10 @@ jobs: #Workflow run is made up of one or more jobs
     runs-on: ubuntu-latest #Through which Server OS we need to Work (type of machine to run the job on)
     steps:
       #Using versioned actions
-      - uses: actions/checkout@v2 
+      - uses: actions/checkout@v2
       # # enable if using `act`
-      # - id: install-aws-cli
-      #   run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+      - id: install-aws-cli
+        run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         with:
@@ -51,12 +51,10 @@ jobs: #Workflow run is made up of one or more jobs
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
-        env:
-          IMAGE_TAG: ${{ github.sha }}
         with:
           task-definition: task-definition.json
           container-name: nodejs-infra
-          image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
         with:

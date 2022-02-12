@@ -4,7 +4,9 @@ on: #Name of the GitHub event that triggers the workflow
   push: #On Push Event We need to take action
     branches: #Now we need to specify the branch name
       - master
-
+  pull_request:
+    branches:
+      - master
 env:
   ECS_SERVICE: nodejs-infra
   ECS_CLUSTER: app-production-nodejs-infra

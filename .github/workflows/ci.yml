@@ -23,6 +23,11 @@ jobs: #Workflow run is made up of one or more jobs
       # # enable if using `act`
       # - id: install-aws-cli
       #   run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          install: true
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli
         with:
@@ -42,8 +47,8 @@ jobs: #Workflow run is made up of one or more jobs
           ECR_REPOSITORY: nodejs-infra
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker buildx build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-          docker buildx build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build  --platform linux/amd64 --push -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def

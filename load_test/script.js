@@ -16,6 +16,6 @@ export const options = {
 };
 
 export default function () {
-    http.get('http://nodejs-infra-1703367659.ap-southeast-1.elb.amazonaws.com');
+    http.get(__ENV.MY_URL);
     sleep(1);
 }

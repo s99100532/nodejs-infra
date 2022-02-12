@@ -23,19 +23,20 @@ This is the documentation decribing the infrastucture.
 - [x] Management access (SSH or RDP) to the servers are allowed only for restricted IPs
 - [x] Design and implement a process for deploying new application versions with no downtime
 
-## Provision the infrascture
+## Provision the infrastructure
 
-## Prerequisites
+### Prerequisites
 
 Terraform is the CI/CD for infrastructure in which there are still some steps for first time setup.
 
 1. create your own ssh key and then generate the public key and replace file `public.pub` under `assets/`
+2. create a bucket and replace the bucket name (here)[https://github.com/s99100532/nodejs-infra/blob/78b633ec069101e2003aee04bb51e26a75442269/terraform/main.tf#L17]
 
-## Provisioning
+### Provisioning
 
-3. Intall `terraform` and `aws-cli` according to [here](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+1. Intall `terraform` and `aws-cli` according to [here](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-4. (Optional if use default AWS profile) Create a named AWS profile for terraform to provision the infrastructure.
+2. (Optional if use default AWS profile) Create a named AWS profile for terraform to provision the infrastructure.
 
 ```sh
 # configure the AWS credential
@@ -44,7 +45,7 @@ aws configure --profile $YOUR_PROFILE_NAME
 export AWS_PROFILE=$YOUR_PROFILE_NAME
 ```
 
-3. RUN
+3. provision the infrastructure
 
 ```sh
 # initialize the dependency
@@ -64,7 +65,15 @@ terraform apply
 ```sh
 # assume you are in repository root.
 cd load_test
-k6 run script.js
+k6 run -e MY_URL=$MY_URL script.js
 ```
 
 3. the cluster will be scaled in 3 minutes.
+
+## SSH to the container
+
+1. ssh to the container machine (ec2)
+2. docker exec -it $CONTAINER_ID ash
+
+if want to limit the ip to access, update `ssh_limit_ips` in (here)[https://github.com/s99100532/nodejs-infra/blob/78b633ec069101e2003aee04bb51e26a75442269/terraform/main.tf#L39]
+For example, the only ip to access is `113.108.18.87`, then set `ssh_limit_ips` to `['113.108.18.87/32']`

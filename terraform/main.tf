@@ -35,7 +35,8 @@ resource "aws_ecr_repository" "registry" {
 }
 
 module "networking" {
-  source = "./networking"
+  source        = "./networking"
+  ssh_limit_ips = ["0.0.0.0/0"]
 }
 
 module "iam" {
@@ -44,10 +45,11 @@ module "iam" {
 
 
 module "ecs" {
-  source         = "./ecs"
-  app_name       = local.name
-  ec2_subnet_ids = module.networking.default_subnet_ids
-  subnet_ids     = module.networking.default_subnet_ids
-  vpc_id         = module.networking.default_vpc_id
+  source             = "./ecs"
+  app_name           = local.name
+  ec2_subnet_ids     = module.networking.default_subnet_ids
+  subnet_ids         = module.networking.default_subnet_ids
+  vpc_id             = module.networking.default_vpc_id
+  security_group_ids = [module.networking.default_security_group_id]
 }
 

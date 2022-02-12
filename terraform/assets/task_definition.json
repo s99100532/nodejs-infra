@@ -1,0 +1,30 @@
+[
+    {
+        "name": "nodejs-infra",
+        "image": "327689575644.dkr.ecr.ap-southeast-1.amazonaws.com/nodejs-infra:latest",
+        "cpu": 128,
+        "memory": 256,
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": "/ecs/nodejs-infra",
+                "awslogs-region": "ap-southeast-1",
+                "awslogs-stream-prefix": "ecs"
+            }
+        },
+        "links": [],
+        "portMappings": [
+            {
+                "hostPort": 0,
+                "containerPort": 3000,
+                "protocol": "tcp"
+            }
+        ],
+        "essential": true,
+        "entryPoint": [],
+        "command": [],
+        "environment": [],
+        "mountPoints": [],
+        "volumesFrom": []
+    }
+]

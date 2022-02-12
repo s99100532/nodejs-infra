@@ -43,6 +43,7 @@ jobs: #Workflow run is made up of one or more jobs
           cache-to: type=gha,mode=max
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli

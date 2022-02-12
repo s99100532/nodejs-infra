@@ -21,8 +21,8 @@ jobs: #Workflow run is made up of one or more jobs
         with:
           node-version: "14" #--> Specify the Version of the Node
       # # enable if using `act`
-      - id: install-aws-cli
-        uses: unfor19/install-aws-cli-action@v1
+      # - id: install-aws-cli
+      #   run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli
         with:
